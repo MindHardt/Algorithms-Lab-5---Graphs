@@ -164,6 +164,28 @@ namespace Graphs
         public GraphVisualizationData(Graph rawGraph)
         {
             RawGraph = rawGraph;
+            HighlightedVertexes = new Vertex[0];
+            HighlightedEdges = new EdgeData[0];
         }
+
+        public GraphVisualizationData WithHighlightedVertexes(params Vertex[] vertexes)
+        {
+            HighlightedVertexes = vertexes ?? HighlightedVertexes;
+            return this;
+        }
+
+        public GraphVisualizationData WithHighlightedEdges(params EdgeData[] edges)
+        {
+            HighlightedEdges = edges ?? HighlightedEdges;
+            return this;
+        }
+
+        //Do it like:
+        // 
+        //  new GraphVisualizationData(graph)
+        //      .WithHighlightedVertexes(graph.Vertexes[0], graph.Vertexes[^1])
+        //      .WithHighlightedEdges(null);
+        //
+        //  It will work and not throw a null ref, I promise.
     }
 }
