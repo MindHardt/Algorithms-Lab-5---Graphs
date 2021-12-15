@@ -29,6 +29,38 @@ namespace Graphs
         static Pen drainPen = new Pen(Color.LightBlue);
 
         static StringBuilder Logs = new StringBuilder();
+        
+        
+        //Сделай статик коллекцию битмапов, в нее потом будем класть картинки по ходу
+
+        //Тут очищаем коллекцию, ету хуйню прописываем перед работой
+        public static void ClearGif()
+        {
+            Logs.Clear();
+
+        }
+
+        //Тут вызываем метод рисования битмапа для данной виздаты и кладем битмап в коллекцию
+        public static void AddFrame(GraphVisualizationData data)
+        {
+
+        }
+
+
+        /// <summary>
+        /// Вызываем это для добавления лога.
+        /// </summary>
+        /// <param name="log">Лог.</param>
+        public static void AddLog(string log) => Logs.Append(log);
+
+        
+        //Тут сохраняем гифку и кладем куда скажут
+        public static void SaveGif(string path)
+        {
+
+        }
+
+
         public static void CreateBitmaps(GraphVisualizationData graphData)
         {
             Bitmap picture = new Bitmap(windowSize, windowSize);
