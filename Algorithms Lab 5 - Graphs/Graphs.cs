@@ -94,7 +94,8 @@ namespace Graphs
             {
                 Weight = edge.Weight,
                 Destination = edge.To,
-                DestinationVertex = to
+                DestinationVertex = to,
+                EdgeDataObject = edge
             });
         }
         private void RestoreAll()
@@ -127,6 +128,7 @@ namespace Graphs
             Vertexes.Remove(vertex);
         }
 
+
         public void AddEdge(int from, int to, int weight = 1)
         {
             if (Edges.Find(e => e.From == from && e.To == to) != null) throw new Exception($"Ребро из {from} в {to} уже существует!") ;
@@ -141,7 +143,6 @@ namespace Graphs
             Edges.Add(newEdge);
             Restore(newEdge);
         }
-
         public void RemoveEdge(int from, int to)
         {
             var edge = Edges.Find(e => e.From == from && e.To == to);
@@ -170,6 +171,9 @@ namespace Graphs
     {
         public int Destination { get; set; }
         public int Weight { get; set; }      
+
+        [JsonIgnore()]
+        public EdgeData EdgeDataObject { get; set; }
 
         [JsonIgnore()]
         public Vertex DestinationVertex { get; set; }
