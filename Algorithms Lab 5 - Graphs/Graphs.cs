@@ -16,10 +16,11 @@ namespace Graphs
         public List<Vertex> Vertexes { get; set; }
         public List<EdgeData> Edges { get; set; }
 
+
         public static Graph FromJSON(string json)
         {
             var graph = JsonSerializer.Deserialize<Graph>(json, JsonOptions);
-            graph.Restore();
+            graph.RestoreAll();
             return graph;
         }
         public static Graph FromCSV(string[] csv, char separator = ';')
@@ -55,10 +56,11 @@ namespace Graphs
             }
 
             graph.Edges = edges.ToList();
-            graph.Restore();
+            graph.RestoreAll();
 
             return graph;
         }
+
 
         public void SaveJSON(string path) => File.WriteAllText(path, JsonSerializer.Serialize(this, JsonOptions));
         public void SaveCSV(string path, char separator = ';')
@@ -77,21 +79,78 @@ namespace Graphs
             File.WriteAllText(path, sb.ToString());
         }
 
-        private void Restore()
+
+        private void Restore(EdgeData edge)
+        {
+            var from = Vertexes.Find(v => v.Number == edge.From);
+            var to = Vertexes.Find(v => v.Number == edge.To);
+
+            if (from == null || to == null) throw new Exception("Одна или обе вершины не существуют!");
+
+            edge.FromVertex = from;
+            edge.ToVertex = to;
+
+            from.Edges.Add(new Edge()
+            {
+                Weight = edge.Weight,
+                Destination = edge.To,
+                DestinationVertex = to
+            });
+        }
+        private void RestoreAll()
         {
             foreach (var ed in Edges)
-            {
-                var from = Vertexes.Find(v => v.Number == ed.From);
-                var to = Vertexes.Find(v => v.Number == ed.To);
-
-                from.Edges.Add(new Edge()
-                {
-                    Weight = ed.Weight,
-                    Destination = ed.To,
-                    DestinationVertex = to
-                });
-            }
+                Restore(ed);
         }
+
+
+        public void AddVertex()
+        {
+            Vertexes.Add(new Vertex()
+            {
+                Number = Vertexes.Select(v => v.Number).Max()
+            });
+        }
+        public void RemoveVertex(int number)
+        {
+            var vertex = Vertexes.Find(v => v.Number == number);
+
+            if (vertex == null) throw new Exception("Нет такой вершины!");
+
+            foreach (var v in Vertexes)
+            {
+                if (v.Number > number) v.Number--;
+            }
+
+            Edges.RemoveAll(e => e.From == number || e.To == number);
+
+            Vertexes.Remove(vertex);
+        }
+
+        public void AddEdge(int from, int to, int weight = 1)
+        {
+            if (Edges.Find(e => e.From == from && e.To == to) != null) throw new Exception($"Ребро из {from} в {to} уже существует!") ;
+            
+            var fromVertex = Vertexes.Find(v => v.Number == from);
+            var toVertex = Vertexes.Find(v => v.Number == to);
+
+            if (fromVertex == null || toVertex == null) throw new Exception("Одна или обе вершины не существуют!");
+
+            var newEdge = new EdgeData(from, weight, to);
+
+            Edges.Add(newEdge);
+            Restore(newEdge);
+        }
+
+        public void RemoveEdge(int from, int to)
+        {
+            var edge = Edges.Find(e => e.From == from && e.To == to);
+
+            if (edge == null) throw new Exception($"Ребро из {from} в {to} не существует!");
+
+            Edges.Remove(edge);
+        }
+
 
         private readonly static JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
         {
@@ -102,6 +161,7 @@ namespace Graphs
     public class Vertex
     {
         public int Number { get; set; }
+        [JsonIgnore]
         public List<Edge> Edges { get; set; } = new List<Edge>();
     }
 
