@@ -102,6 +102,8 @@ namespace Graphs
         public static void Setup()
         {
             Console.CursorVisible = false;
+            Console.WindowHeight = 40;
+
             ActiveScreen = MainMenu;
             ActiveScreen.Show();
             ActiveScreen.CheckActiveButtons();
@@ -310,6 +312,35 @@ namespace Graphs
                     }
                 }, () => Program.ActiveGraph != null && Program.ActiveGraph.Edges.Any()),
 
+                TextBlock.Indent,
+
+                TextBlock.Indent,
+
+                new TextBlock("ВИЗУАЛИЗАЦИЯ"),
+
+                new Button("Сохранить состояние", () =>
+                {
+                    Visualizer.SaveStatus(Program.ActiveGraph);
+                }, () => Program.ActiveGraph != null),
+
+                new Button("Начать запись в GIF", () =>
+                {
+                    Visualizer.StartTrace();
+                }, () => Program.ActiveGraph != null),
+
+                new Button("Добавить состояние в GIF", () =>
+                {
+                    Visualizer.AddFrame(new GraphVisualizationData(Program.ActiveGraph));
+                }, () => Program.ActiveGraph != null),
+
+                new Button("Сохранить GIF", () =>
+                {
+                    Visualizer.SaveGif("Graph.gif");
+                }, () => Program.ActiveGraph != null && Visualizer.IsTracing),
+
+                TextBlock.Indent,
+
+                new Button("Выйти", () => Environment.Exit(0), () => true),
 
                 new FeedBackElement()
             }

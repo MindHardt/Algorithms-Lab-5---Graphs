@@ -33,12 +33,18 @@ namespace Graphs
         
         //Сделай статик коллекцию битмапов, в нее потом будем класть картинки по ходу
 
-        //Тут очищаем коллекцию, ету хуйню прописываем перед работой
-        public static void ClearGif()
+        //Тут очищаем коллекцию и начинаем делать гифку, ету хуйню прописываем перед работой
+        public static void StartTrace()
         {
             Logs.Clear();
+            IsTracing = true;
 
         }
+
+        /// <summary>
+        /// Показывает сохраняем ли мы состояния в гифку.
+        /// </summary>
+        public static bool IsTracing { get; private set; }
 
         //Тут вызываем метод рисования битмапа для данной виздаты и кладем битмап в коллекцию
         public static void AddFrame(GraphVisualizationData data)
