@@ -21,6 +21,8 @@ namespace Graphs
         {
             var graph = JsonSerializer.Deserialize<Graph>(json, JsonOptions);
             graph.RestoreAll();
+            graph.CheckOriented();
+            graph.CheckWeighted();
             return graph;
         }
         public static Graph FromCSV(string[] csv, char separator = ';')
@@ -57,6 +59,8 @@ namespace Graphs
 
             graph.Edges = edges.ToList();
             graph.RestoreAll();
+            graph.CheckOriented();
+            graph.CheckWeighted();
 
             return graph;
         }
@@ -109,7 +113,7 @@ namespace Graphs
         {
             Vertexes.Add(new Vertex()
             {
-                Number = Vertexes.Select(v => v.Number).Max()
+                Number = Vertexes.Any() ? Vertexes.Select(v => v.Number).Max() + 1 : 0
             });
         }
         public void RemoveVertex(int number)
@@ -123,9 +127,20 @@ namespace Graphs
                 if (v.Number > number) v.Number--;
             }
 
+            var connectedVertexes = Vertexes
+                .Where(v => v.Edges.Find(e => e.Destination == number) != null);
+
+            foreach (var v in connectedVertexes)
+            {
+                v.Edges.Remove(v.Edges.Find(e => e.Destination == number));
+            }
+
             Edges.RemoveAll(e => e.From == number || e.To == number);
 
             Vertexes.Remove(vertex);
+
+            CheckOriented();
+            CheckWeighted();
         }
 
 
@@ -142,6 +157,8 @@ namespace Graphs
 
             Edges.Add(newEdge);
             Restore(newEdge);
+            CheckOriented();
+            CheckWeighted();
         }
         public void RemoveEdge(int from, int to)
         {
@@ -149,9 +166,45 @@ namespace Graphs
 
             if (edge == null) throw new Exception($"Ребро из {from} в {to} не существует!");
 
+            var vertex = Vertexes.Find(v => v.Number == from);
+            var vertexEdge = vertex.Edges.Find(e => e.Destination == to);
+
+            vertex.Edges.Remove(vertexEdge);
             Edges.Remove(edge);
+            CheckOriented();
+            CheckWeighted();
         }
 
+        /// <summary>
+        /// True, if not all of the edges are both way.
+        /// </summary>
+        public bool IsOriented
+        {
+            get => isOriented;
+        }
+        private bool isOriented;
+        private void CheckOriented()
+        {
+            if (Edges.Any()) 
+                isOriented = !Edges.All(
+                    e1 => Edges.Find(
+                        e2 => e1.To == e2.From && e1.From == e2.To && e1.Weight == e2.Weight) != null);
+            else isOriented = false;
+        }
+
+        /// <summary>
+        /// True, if not all edges are the same weight.
+        /// </summary>
+        public bool IsWeighted
+        {
+            get => isWeighted;
+        }
+        private bool isWeighted;
+        private void CheckWeighted()
+        {
+            if (Edges.Any()) isWeighted = !Edges.All(e => e.Weight == Edges[0].Weight);
+            else isWeighted = false;
+        }
 
         private readonly static JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
         {
@@ -217,6 +270,8 @@ namespace Graphs
             Weight = weight;
             To = to;
         }
+
+        public EdgeData() { }
     }
 
     public class GraphVisualizationData
