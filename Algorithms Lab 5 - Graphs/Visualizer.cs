@@ -46,6 +46,12 @@ namespace Graphs
 
         }
 
+        //Метод для сохранения текущего состояния битмапа без выделений в картинку .png/.jpg
+        public static void SaveStatus(Graph graph)
+        {
+
+        }
+
 
         /// <summary>
         /// Вызываем это для добавления лога.
