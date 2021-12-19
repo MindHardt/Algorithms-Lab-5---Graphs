@@ -145,7 +145,7 @@ namespace Graphs
         }
 
 
-        public void AddEdge(int from, int to, int weight = 1)
+        public void AddEdge(int from, int to, int weight = 1, int capacity = 1)
         {
             if (Edges.Find(e => e.From == from && e.To == to) != null) throw new Exception($"Ребро из {from} в {to} уже существует!") ;
             
@@ -154,7 +154,7 @@ namespace Graphs
 
             if (fromVertex == null || toVertex == null) throw new Exception("Одна или обе вершины не существуют!");
 
-            var newEdge = new EdgeData(from, weight, to);
+            var newEdge = new EdgeData(from, weight, to, capacity);
 
             Edges.Add(newEdge);
             Restore(newEdge);
@@ -272,11 +272,23 @@ namespace Graphs
         /// </summary>
         public int To { get; set; }
 
-        public EdgeData(int from, int weight, int to)
+        public EdgeData(int from, int weight, int to, int capacity = 0)
         {
             From = from;
             Weight = weight;
             To = to;
+            Capacity = capacity;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is EdgeData)) return false;
+            var edge = obj as EdgeData;
+            return
+                From == edge.From &&
+                Weight == edge.Weight &&
+                To == edge.To &&
+                Capacity == edge.Capacity;
         }
 
         public EdgeData() { }

@@ -292,16 +292,27 @@ namespace Graphs
 
                 new Button("Добавить ребро", () =>
                 {
-                    int vertex1 = SelectValue("Введите номер первой вершины", Program.ActiveGraph.Vertexes.Select(v => v.Number).ToArray(), v => v.ToString());
-                    int vertex2 = SelectValue("Введите номер второй вершины", Program.ActiveGraph.Vertexes.Select(v => v.Number).ToArray(), v => v.ToString());
+                    int vertex1 = SelectValue("Введите номер первой вершины", Program.ActiveGraph.Vertexes
+                        .Select(v => v.Number)
+                        .ToArray(), v => v.ToString());
+                    int vertex2 = SelectValue("Введите номер второй вершины", Program.ActiveGraph.Vertexes
+                        .Where(v => v.Edges.Find(e => e.Destination == vertex1) == null)
+                        .Select(v => v.Number)
+                        .ToArray(), v => v.ToString());
                     int weight = ReadValue("Введите вес", s => Convert.ToInt32(s), w => w >= 0);
+                    int capacity = ReadValue("Введите пропускную способность", s => Convert.ToInt32(s), w => w >= 0);
                     Program.ActiveGraph.AddEdge(vertex1, vertex2, weight);
                 }, () => Program.ActiveGraph != null),
 
                 new Button("Удалить ребро", () =>
                 {
-                    int vertex1 = SelectValue("Введите номер первой вершины", Program.ActiveGraph.Vertexes.Select(v => v.Number).ToArray(), v => v.ToString());
-                    int vertex2 = SelectValue("Введите номер второй вершины", Program.ActiveGraph.Vertexes.Select(v => v.Number).ToArray(), v => v.ToString());
+                    int vertex1 = SelectValue("Введите номер первой вершины", Program.ActiveGraph.Vertexes
+                        .Select(v => v.Number)
+                        .ToArray(), v => v.ToString());
+                    int vertex2 = SelectValue("Введите номер второй вершины", Program.ActiveGraph.Vertexes
+                        .Find(v => v.Number == vertex1).Edges
+                        .Select(e => e.Destination)
+                        .ToArray(), v => v.ToString());
                     try
                     {
                         Program.ActiveGraph.RemoveEdge(vertex1, vertex2);
