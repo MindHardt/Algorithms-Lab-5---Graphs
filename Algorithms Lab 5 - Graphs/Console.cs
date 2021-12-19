@@ -268,6 +268,7 @@ namespace Graphs
                         $"Вершин: {Program.ActiveGraph.Vertexes.Count}, " +
                         $"Ребер: {Program.ActiveGraph.Edges.Count}, " +
                         $"Взвешенный? {Program.ActiveGraph.IsWeighted}, " +
+                        $"Трансортная сеть? {Program.ActiveGraph.IsTransport}, " +
                         $"Ориентированный? {Program.ActiveGraph.IsOriented}");
                 }, () => Program.ActiveGraph != null),
 
