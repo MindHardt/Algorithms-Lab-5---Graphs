@@ -30,6 +30,9 @@ namespace Graphs
 
         static int iteration = 0;
 
+        static Vertex source;
+        static Vertex sink;
+
         static StringBuilder Logs = new StringBuilder();
         static List<Bitmap> Frames = new List<Bitmap>();
         
@@ -49,10 +52,12 @@ namespace Graphs
         public static bool IsTracing { get; private set; }
 
         //Тут вызываем метод рисования битмапа для данной виздаты и кладем битмап в коллекцию
-        public static void AddFrame(GraphVisualizationData data)
+        public static void AddFrame(GraphVisualizationData data, Vertex start = null,
+                                    Vertex end = null)
         {
             Bitmap picture = CreateBitmaps(data);
-            
+            source = start;
+            sink = end;
             Frames.Add(picture);
             SavePicture(picture);
 
