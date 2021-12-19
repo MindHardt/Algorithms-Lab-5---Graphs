@@ -99,7 +99,8 @@ namespace Graphs
                 Weight = edge.Weight,
                 Destination = edge.To,
                 DestinationVertex = to,
-                EdgeDataObject = edge
+                EdgeDataObject = edge,
+                Capacity = edge.Capacity
             });
         }
         private void RestoreAll()
@@ -223,7 +224,9 @@ namespace Graphs
     public class Edge
     {
         public int Destination { get; set; }
-        public int Weight { get; set; }      
+        public int Weight { get; set; }   
+        
+        public int Capacity { get; set; }
 
         [JsonIgnore()]
         public EdgeData EdgeDataObject { get; set; }
@@ -252,6 +255,11 @@ namespace Graphs
         /// Represents a weight of this Edge. 
         /// </summary>
         public int Weight { get; set; }
+
+        /// <summary>
+        /// Represents the maximum capacity of this edge in Transport Networks
+        /// </summary>
+        public int Capacity { get; set; }
 
         /// <summary>
         /// Represents the second position vertex as a Vertex object. This is not JSON-serializable.
