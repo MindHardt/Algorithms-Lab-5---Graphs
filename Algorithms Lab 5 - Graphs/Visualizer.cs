@@ -28,8 +28,10 @@ namespace Graphs
         static Pen soursePen = new Pen(Color.Orange);
         static Pen drainPen = new Pen(Color.LightBlue);
 
+        static int iteration = 0;
+
         static StringBuilder Logs = new StringBuilder();
-        
+        static List<Bitmap> Frames = new List<Bitmap>();
         
         //Сделай статик коллекцию битмапов, в нее потом будем класть картинки по ходу
 
@@ -49,15 +51,19 @@ namespace Graphs
         //Тут вызываем метод рисования битмапа для данной виздаты и кладем битмап в коллекцию
         public static void AddFrame(GraphVisualizationData data)
         {
+            Bitmap picture = CreateBitmaps(data);
+            
+            Frames.Add(picture);
+            SavePicture(picture);
 
         }
 
-        //Метод для сохранения текущего состояния битмапа без выделений в картинку .png/.jpg
+        //Метод для сохранения текущего состояния битмапа (без выделений) в картинку .png/.jpg
         public static void SaveStatus(Graph graph)
         {
-
+            var bm = CreateBitmaps(new GraphVisualizationData(graph));
+            SavePicture(bm);
         }
-
 
         /// <summary>
         /// Вызываем это для добавления лога.
@@ -69,16 +75,39 @@ namespace Graphs
         //Тут сохраняем гифку и кладем куда скажут
         public static void SaveGif(string path)
         {
+            IsTracing = false;
+            using (MagickImageCollection collection = new MagickImageCollection())
+            {
+                // Add first image and set the animation delay to 100ms
+                for (int i = 2; i <= Frames.Count; i++)
+                {
+                    collection.Add(path + i + ".png");
+                    collection[i - 2].AnimationDelay = 100;
+                }
 
+                // Optionally reduce colors
+                QuantizeSettings settings = new QuantizeSettings();
+                settings.Colors = 256;
+                collection.Quantize(settings);
+
+                // Optionally optimize the images (images should have the same size).
+                collection.Optimize();
+
+
+                // Save gif
+                collection.Write("result.gif");
+            }
         }
 
 
-        public static void CreateBitmaps(GraphVisualizationData graphData)
+        public static Bitmap CreateBitmaps(GraphVisualizationData graphData)
         {
             Bitmap picture = new Bitmap(windowSize, windowSize);
             graph = graphData;
             GetVertexPoints();
             DrawVertex(picture);
+            WriteLogs(picture);
+            return picture;
         }
 
         static void DrawVertex(Bitmap picture)
@@ -116,8 +145,6 @@ namespace Graphs
                 g.DrawString(Convert.ToString(i + 1), new Font("Arial", 20),
                                     basicBrush, placeVertexes[i].X - 10, placeVertexes[i].Y - 13);
             }
-            WriteLogs(g);
-            SavePicture(picture);
         }
 
         static Graphics DrawEdges(Graphics picture)
@@ -161,20 +188,24 @@ namespace Graphs
 
                 }
 
-
-                pen.CustomEndCap = new AdjustableArrowCap(6, 6);
-                picture.RotateTransform((float)Math.Asin(sin));
-                picture.DrawString(Convert.ToString(graph.RawGraph.Edges[i].Weight),
-                    new Font(FontFamily.GenericMonospace, 20), brush, (x2 + x1) / 2, (y2 + y1) / 2);
-                picture.RotateTransform(-((float)Math.Asin(sin)));
+                if (graph.RawGraph.IsOriented)
+                    pen.CustomEndCap = new AdjustableArrowCap(6, 6);
+                if (graph.RawGraph.IsWeighted)
+                {
+                    picture.RotateTransform((float)Math.Asin(sin));
+                    picture.DrawString(Convert.ToString(graph.RawGraph.Edges[i].Weight),
+                        new Font(FontFamily.GenericMonospace, 20), brush, (x2 + x1) / 2, (y2 + y1) / 2);
+                    picture.RotateTransform(-((float)Math.Asin(sin)));
+                }
                 picture.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
 
             }
             return picture;
         }
 
-        static void WriteLogs(Graphics g)
+        static void WriteLogs(Bitmap picture)
         {
+            Graphics g = Graphics.FromImage(picture);
             int x = center;
             int y = (int)(0.9 * windowSize);
             g.DrawString(Logs.ToString(), new Font(FontFamily.GenericMonospace, 25), new SolidBrush(Color.Black), x, y);
@@ -189,42 +220,19 @@ namespace Graphs
             double angle = Math.PI / (vertexCount - 1);
             for (int i = 0; i < length; i++)
             {
-                placeVertexes[i] = new Point((int)(center - radius * Math.Cos(angle * i)), (int)(center - radius * Math.Sin(angle * i) * Math.Pow(-1, i)));
+                placeVertexes[i] = new Point(
+                    (int)(center - radius * Math.Cos(angle * i)), 
+                    (int)(center - radius * Math.Sin(angle * i) * Math.Pow(-1, i)));
             }
         }
 
-        static void SavePicture(Bitmap picture, int picNumber = 0)
+        static void SavePicture(Bitmap picture)
         {
 
             //введите своё название + picNumber
-            picture.Save(@"test.png");
+            picture.Save(@"graph" + (++iteration).ToString() +".png");
         }
 
-        public static void SaveGIF(int num)
-        {
-            using (MagickImageCollection collection = new MagickImageCollection())
-            {
-                string path = @""; //напишите название картинок
-                // Add first image and set the animation delay to 100ms
-                for (int i = 2; i <= num; i++)
-                {
-                    collection.Add(path + i + ".png");
-                    collection[i - 2].AnimationDelay = 100;
-                }
 
-                // Optionally reduce colors
-                QuantizeSettings settings = new QuantizeSettings();
-                settings.Colors = 256;
-                collection.Quantize(settings);
-
-                // Optionally optimize the images (images should have the same size).
-                collection.Optimize();
-
-
-                // Save gif
-                collection.Write("result.gif");
-            }
-
-        }
     }
 }
