@@ -285,8 +285,8 @@ namespace Graphs
     public class GraphVisualizationData
     {
         public readonly Graph RawGraph;
-        public Vertex[] HighlightedVertexes { get; set; }
-        public EdgeData[] HighlightedEdges { get; set; }
+        public IEnumerable<Vertex> HighlightedVertexes { get; set; }
+        public IEnumerable<EdgeData> HighlightedEdges { get; set; }
       
         public GraphVisualizationData(Graph rawGraph)
         {
@@ -295,13 +295,46 @@ namespace Graphs
             HighlightedEdges = new EdgeData[0];
         }
 
+        /// <summary>
+        /// Highlights specified vertexes.
+        /// </summary>
+        /// <param name="vertexes"></param>
+        /// <returns></returns>
         public GraphVisualizationData WithHighlightedVertexes(params Vertex[] vertexes)
         {
             HighlightedVertexes = vertexes ?? HighlightedVertexes;
             return this;
         }
 
+        /// <summary>
+        /// Highlights specified vertexes.
+        /// </summary>
+        /// <param name="vertexes"></param>
+        /// <returns></returns>
+        public GraphVisualizationData WithHighlightedVertexes(IEnumerable<Vertex> vertexes)
+        {
+            HighlightedVertexes = vertexes ?? HighlightedVertexes;
+            return this;
+        }
+
+
+        /// <summary>
+        /// Highlights specified edges.
+        /// </summary>
+        /// <param name="edges"></param>
+        /// <returns></returns>
         public GraphVisualizationData WithHighlightedEdges(params EdgeData[] edges)
+        {
+            HighlightedEdges = edges ?? HighlightedEdges;
+            return this;
+        }
+
+        /// <summary>
+        /// Highlights specified edges.
+        /// </summary>
+        /// <param name="edges"></param>
+        /// <returns></returns>
+        public GraphVisualizationData WithHighlightedEdges(IEnumerable<EdgeData> edges)
         {
             HighlightedEdges = edges ?? HighlightedEdges;
             return this;
