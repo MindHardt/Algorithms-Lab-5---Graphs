@@ -23,6 +23,7 @@ namespace Graphs
             graph.RestoreAll();
             graph.CheckOriented();
             graph.CheckWeighted();
+            graph.CheckTransport();
             return graph;
         }
         public static Graph FromCSV(string[] csv, char separator = ';')
@@ -61,6 +62,7 @@ namespace Graphs
             graph.RestoreAll();
             graph.CheckOriented();
             graph.CheckWeighted();
+            graph.CheckTransport();
 
             return graph;
         }
@@ -142,6 +144,7 @@ namespace Graphs
 
             CheckOriented();
             CheckWeighted();
+            CheckTransport();
         }
 
 
@@ -160,6 +163,7 @@ namespace Graphs
             Restore(newEdge);
             CheckOriented();
             CheckWeighted();
+            CheckTransport();
         }
         public void RemoveEdge(int from, int to)
         {
@@ -174,6 +178,7 @@ namespace Graphs
             Edges.Remove(edge);
             CheckOriented();
             CheckWeighted();
+            CheckTransport();
         }
 
         /// <summary>
@@ -193,6 +198,7 @@ namespace Graphs
             else isOriented = false;
         }
 
+
         /// <summary>
         /// True, if not all edges are the same weight.
         /// </summary>
@@ -205,6 +211,21 @@ namespace Graphs
         {
             if (Edges.Any()) isWeighted = !Edges.All(e => e.Weight == Edges[0].Weight);
             else isWeighted = false;
+        }
+
+
+        /// <summary>
+        /// True, if all edges's capacity above 0.
+        /// </summary>
+        public bool IsTransport
+        {
+            get => isTransport;
+        }
+        private bool isTransport;
+        private void CheckTransport()
+        {
+            if (Edges.Any()) isTransport = Edges.All(e => e.Capacity > 0);
+            else isTransport = false;
         }
 
         private readonly static JsonSerializerOptions JsonOptions = new JsonSerializerOptions()
