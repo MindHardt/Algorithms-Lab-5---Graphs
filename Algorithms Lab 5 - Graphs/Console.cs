@@ -102,7 +102,7 @@ namespace Graphs
         public static void Setup()
         {
             Console.CursorVisible = false;
-            Console.WindowHeight = 40;
+            Console.WindowHeight = 50;
 
             ActiveScreen = MainMenu;
             ActiveScreen.Show();
@@ -328,7 +328,36 @@ namespace Graphs
 
                 TextBlock.Indent,
 
+                new TextBlock("АЛГОРИТМЫ"),
+
+                TextBlock.Indent,
+
+                new Button("Обход в ширину", () =>
+                {
+                    Algos.BreadthTraversal(Program.ActiveGraph);
+                }, () => Program.ActiveGraph != null),
+
+                new Button("Обход в глубину", () =>
+                {
+                    Algos.DepthTraversal(Program.ActiveGraph);
+                }, () => Program.ActiveGraph != null),
+
+                new Button("Транспортная сеть", () =>
+                {
+                    Vertex source = SelectValue("Введите номер первой вершины", Program.ActiveGraph.Vertexes
+                        .ToArray(), v => v.Number.ToString());
+                    Vertex sink = SelectValue("Введите номер второй вершины", Program.ActiveGraph.Vertexes
+                        .ToArray(), v => v.Number.ToString());
+                    Algos.FordFulkerson(new GraphVisualizationData(Program.ActiveGraph), source, sink);
+                }, () => Program.ActiveGraph != null && Program.ActiveGraph.IsTransport),
+
+                TextBlock.Indent,
+
+                TextBlock.Indent,
+
                 new TextBlock("ВИЗУАЛИЗАЦИЯ"),
+
+                TextBlock.Indent,
 
                 new Button("Сохранить состояние", () =>
                 {
@@ -347,7 +376,7 @@ namespace Graphs
 
                 new Button("Сохранить GIF", () =>
                 {
-                    Visualizer.SaveGif("Graph.gif");
+                    Visualizer.SaveGif("Graph");
                 }, () => Program.ActiveGraph != null && Visualizer.IsTracing),
 
                 TextBlock.Indent,
