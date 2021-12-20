@@ -198,7 +198,7 @@ namespace Graphs
                 if (graph.RawGraph.IsWeighted)
                 {
                     picture.RotateTransform((float)Math.Asin(sin));
-                    picture.DrawString(Convert.ToString(graph.RawGraph.Edges[i].Weight),
+                    picture.DrawString($"{graph.RawGraph.Edges[i].Weight};{graph.RawGraph.Edges[i].Capacity}",
                         new Font(FontFamily.GenericMonospace, 20), brush, (x2 + x1) / 2, (y2 + y1) / 2);
                     picture.RotateTransform(-((float)Math.Asin(sin)));
                 }
